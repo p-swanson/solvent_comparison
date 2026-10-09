@@ -1,0 +1,28 @@
+input:
+  structure_dir: ./  # folder of .pdb/.cif/.mmcif files
+  name: null              # optional name override (single-file input only)
+
+models:
+  score_model_dir: /SuperWater/models/water_score_res15
+  confidence_model_dir: /SuperWater/models/water_confidence_res15_sigmoid
+
+output:
+  output_dir: ./supa_outs
+  overwrite: true         # re-run structures whose output already exists
+  format: pdb             # output structure format: pdb or cif
+  include_protein: true   # include the input protein with the predicted waters
+
+runtime:
+  device: cuda            # only cuda is supported (no CPU)
+  seed: 42                # random seed for reproducibility
+  cleanup_intermediates: false  # delete this run's per-structure work files after success
+  keep_embeddings: true   # keep the reusable ESM embeddings when cleaning up
+  keep_graph_cache: true  # keep the reusable PyG graph cache when cleaning up
+
+prediction:
+  water_ratio: 10         # waters sampled per residue (higher = more coverage, more memory)
+  inference_steps: 20     # number of reverse-diffusion steps
+  confidence_cutoff: 0.05  # keep-probability threshold ~[0.02, 0.5] (higher = stricter)
+  batch_size: 1           # structures scored per forward pass
+  save_structure: true    # write <name>_centroid.{pdb,cif}
+  save_filtered: false    # also write <name>_filtered.txt (off by default)

@@ -1,0 +1,39 @@
+universe = container
+container_image = container.sif
+
+suprw_dir=supa_cap_005_training
+
+transfer_input_files = backup/download_rcsb.py,backup/utils.py,$(suprw_dir)/fixed_$(pdb)/fixed_$(pdb)_centroid.pdb,backup/run_rism_master_cluster.py,backup/epipy.py,./container.sif
+# ------------------------------------------------------------------------------
+rho=9.5
+name=SMEAR_$(suprw_dir)_$(rho)_mod_cutoff
+# ------------------------------------------------------------------------------
+log = output/$(name)_condor_logs/$(name)_$(pdb)_$(Cluster)_$(Process).log
+error = output/$(name)_condor_logs/$(name)_$(pdb)_$(Cluster)_$(Process).err
+output = output/$(name)_condor_logs/$(name)_$(pdb)_$(Cluster)_$(Process).out
+
+executable = backup/run_rho_cluster.sh
+
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+
+transfer_output_files = ./
+
++WantGPULab = false
+
+want_ospool = true
+want_campus_pools = true
+want_campus_pools = false
+
+environment = "CLUSTER=$(Cluster) PROCESS=$(Process) RUNNINGON=$$(Name) PDB=$(pdb) RHO=$(rho)"
+
+request_cpus = 2
+
+request_memory = ifthenelse(MemoryUsage =!= undefined,MAX({MemoryUsage * 3,4000}), 750)
+
+request_disk = 4GB
+
+max_idle = 10000
+
+queue pdb from backup/train_data_random_3k.txt
+
