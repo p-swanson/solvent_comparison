@@ -9,7 +9,7 @@ layout
 * run\_files: bash scripts used to run jobs on HTCondor
 * submit\_files: .sub files for HTCondor
 
-Dependancies
+Dependencies
 ------------
 * PDBFixer -> add missing residues
 * OpenMM 8.0 -> parameterize proteins
